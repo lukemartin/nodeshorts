@@ -1,9 +1,8 @@
 define([
 	'jquery',
 	'underscore',
-	'backbone',
-	'transitions'
-], function ($, _, Backbone, Transitions) {
+	'backbone'
+], function ($, _, Backbone) {
 
 	'use strict';
 

@@ -24,10 +24,37 @@
 	});
 
 	// Schema
+	var Schema = mongoose.Schema;
+
+	var Short = new Schema({
+		url:          { type: String, required: true }	
+	});
+
+	var ShortModel = mongoose.model('Short', Short);
 
 	// Routes
 	app.get('/api', function (req, res) {
 		res.send('API is running');
+	});
+
+	app.post('/api/shorts', function (req, res) {
+		var short;
+
+		console.log(req.body);
+
+		short = new ShortModel({
+			url: req.body.url
+		});
+
+		short.save(function (error) {
+			if (!error) {
+				return console.log('created record', short);
+			} else {
+				return console.log(error);
+			}
+		});
+
+		return res.end(short);
 	});
 
 	app.listen(port);

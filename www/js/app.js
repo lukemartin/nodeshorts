@@ -18,6 +18,12 @@ define([
 
 		index: function () {
 			console.log('index init');
+
+			require(['views/shortenForm'], function (ShortenFormView) {
+				var shortenFormView = new ShortenFormView();
+
+				$('#content').html(shortenFormView.render().el);
+			});
 		}
 
 	});

@@ -10,6 +10,10 @@ define([
 
 	var ShortenFormView = Backbone.View.extend({
 
+		events: {
+			'click #shorten': 'shorten'
+		},
+
 		initialize: function () {
 			console.log('ShortenFormView init');
 		},
@@ -20,6 +24,12 @@ define([
 			$(this.el).html(template());
 
 			return this;
+		},
+
+		shorten: function (e) {
+			e.preventDefault();
+			
+			console.log('shorten clicked');
 		}
 
 	});

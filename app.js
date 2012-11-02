@@ -27,14 +27,17 @@
 	var Schema = mongoose.Schema;
 
 	var Short = new Schema({
-		url: { type: String, required: true },
-		slug: { type: String, required: true},
-		visits: { type: Number, default: 0 },
+		url:           { type: String, required: true, index: {unique: true} },
+		slug:          { type: String, required: true, index: {unique: true} },
+		visits:        { type: Number, default: 0 },
 		unique_visits: { type: Number, default: 0 },
-		ips: { type: Array },
-		created: { type: Date, default: Date.now },
-		modified: { type: Date, default: Date.now }
+		ips:           { type: Array },
+		created:       { type: Date, default: Date.now },
+		modified:      { type: Date, default: Date.now }
 	});
+
+	Short.path('url').index({unique: true});
+	Short.path('slug').index({unique: true});
 
 	var ShortModel = mongoose.model('Short', Short);
 
@@ -43,34 +46,42 @@
 		res.send('API is running');
 	});
 
-	app.post('/api/shorts', function (req, res) {
-		var short;
+	app.get('/api/shorts/search/:url?', function (req, res) {
+		console.log(req.params.url);
 
-		ShortModel.findOne({
-			url: req.body.url
-		}, function (error, short) {
+		return ShortModel.find({
+			url: req.params.url
+		}, function (error, shorts) {
 			if (!error) {
-				if (!short) {
-					short = new ShortModel({
-						url: req.body.url,
-						slug: hasher(req.body.url)
-					});
+				return res.send(shorts);
+			} else {
+				return console.log(error);
+			}
+		});
+	});
 
-					short.save(function (error) {
+	app.post('/api/shorts', function (req, res) {
+		var short = new ShortModel({
+			url: req.body.url,
+			slug: hasher(req.body.url)
+		});
+
+		return short.save(function (error) {
+			if (!error) {
+				return res.send('created record', short);
+			} else {
+				if (error.code === 11000) {
+					return ShortModel.findOne({
+						url: req.body.url
+					}, function (error, short) {
 						if (!error) {
-							return console.log('created record', short);
+							return res.send(short);
 						} else {
 							return console.log(error);
 						}
 					});
-
-					return res.send(short);
-				} else {
-					return res.send('exists');
 				}
-				return;
-			} else {
-				return console.log(error);
+				return res.send(error);
 			}
 		});
 	});

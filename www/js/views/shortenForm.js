@@ -3,8 +3,9 @@ define([
 	'underscore',
 	'backbone',
 	'handlebars',
-	'text!templates/shortenForm.html'
-], function ($, _, Backbone, Handlebars, shortenFormTemplate) {
+	'text!templates/shortenForm.html',
+	'collections/shorts'
+], function ($, _, Backbone, Handlebars, shortenFormTemplate, Shorts) {
 
 	'use strict';
 
@@ -16,6 +17,7 @@ define([
 
 		initialize: function () {
 			console.log('ShortenFormView init');
+			this.shorts = new Shorts();
 		},
 
 		render: function () {
@@ -30,6 +32,14 @@ define([
 			e.preventDefault();
 			
 			console.log('shorten clicked');
+
+			var url = $('#url').val();
+
+			console.log(url);
+
+			this.shorts.create({
+				url: url
+			});
 		}
 
 	});

@@ -18,6 +18,7 @@ define([
 		initialize: function () {
 			console.log('ShortenFormView init');
 			this.shorts = new Shorts();
+			this.shorts.bind('add', this.shortened, this);
 		},
 
 		render: function () {
@@ -39,6 +40,16 @@ define([
 
 			this.shorts.create({
 				url: url
+			});
+		},
+
+		shortened: function (short) {
+			require(['views/shortened'], function (ShortenedView) {
+				var shortenedView = new ShortenedView({
+					model: short
+				});
+
+				$('#content').html(shortenedView.render().el);
 			});
 		}
 

@@ -9,7 +9,8 @@ define([
 	var App = Backbone.Router.extend({
 
 		routes: {
-			'': 'index'
+			'':       'index',
+			':query': 'bounce'
 		},
 
 		initialize: function () {
@@ -23,6 +24,16 @@ define([
 				var shortenFormView = new ShortenFormView();
 
 				$('#content').html(shortenFormView.render().el);
+			});
+		},
+
+		bounce: function (slug) {
+			console.log('bounce init');
+
+			require(['views/bounce'], function (BounceView) {
+				var bounceView = new BounceView(slug);
+
+				$('#content').html(bounceView.render().el);
 			});
 		}
 

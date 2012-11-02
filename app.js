@@ -46,19 +46,33 @@
 		res.send('API is running');
 	});
 
-	app.get('/api/shorts/search/:url?', function (req, res) {
-		console.log(req.params.url);
+	app.get('/api/shorts/:slug?', function (req, res) {
+		console.log(req.params.slug);
 
-		return ShortModel.find({
-			url: req.params.url
-		}, function (error, shorts) {
+		return ShortModel.findOne({
+			slug: req.params.slug
+		}, function (error, short) {
 			if (!error) {
-				return res.send(shorts);
+				return res.send(short);
 			} else {
 				return console.log(error);
 			}
 		});
 	});
+
+	// app.get('/api/shorts/search/:url?', function (req, res) {
+	// 	console.log(req.params.url);
+
+	// 	return ShortModel.find({
+	// 		url: req.params.url
+	// 	}, function (error, shorts) {
+	// 		if (!error) {
+	// 			return res.send(shorts);
+	// 		} else {
+	// 			return console.log(error);
+	// 		}
+	// 	});
+	// });
 
 	app.post('/api/shorts', function (req, res) {
 		var short = new ShortModel({

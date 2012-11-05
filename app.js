@@ -50,10 +50,71 @@
 	app.engine('html', require('hbs').__express);
 
 	// Routes	
+	app.get('/:path', function (req, res) {
+		console.log(req.params.path);
+		if(req.params.path === '' || req.params.path === 'favicon.ico') return;
+
+		fs.exists(__dirname + '/www/' + req.params.path, function (e) {
+			if(!e) {
+				ShortModel.findOne({
+					slug: req.params.path
+				}, function (error, short) {
+					if (!error) {
+						if (short) {
+							console.log('hit!');
+							res.redirect(short.url);
+						} else {
+							res.send(404);
+						}
+					} else {
+						res.send('oops');
+					}
+				});
+			} else {
+				res.send('boooo')
+			}
+		});
+
+	});
 	app.get('/', function (req, res) {
-		res.render('blah.html', {name: 'Luke'});
+		res.render('form.html');
+	});
+	app.post('/', function (req, res) {
+		var short = new ShortModel({
+			url: req.body.url,
+			slug: hasher(req.body.url)
+		});
+
+		short.save(function (error) {
+			if (!error) {
+				render_shortened(res, req, short);
+			} else {
+				if (error.code === 11000) {
+					console.log('already in bro!');
+					
+					ShortModel.findOne({
+						url: req.body.url
+					}, function (error, short) {
+						if (!error) {
+							render_shortened(res, req, short);
+						} else {
+							res.send('oops');
+						}
+					});
+				} else {
+					res.send('oops');
+				}
+			}
+		});
 	});
 	
+
+	var render_shortened = function (res, req, short) {
+		res.render('shortened.html', {
+			url: short.url,
+			shortened_url: 'http://' + req.header('host') + '/' + short.slug
+		});
+	}
 
 	// Hasher
 	var hasher = function (URL, length) {

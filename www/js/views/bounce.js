@@ -13,7 +13,6 @@ define([
 
 		initialize: function (slug) {
 			console.log('BounceView init');
-			console.log(slug);
 
 			// this is probably a terrible idea
 			var shorts = new Shorts();
@@ -21,11 +20,14 @@ define([
 			shorts.fetch({
 				data: {},
 				success: function (short) {
-					//setTimeout(function() {
-						//console.log(short.at(0).get('url'));
-					//}, 1000);
+					if(short.length === 0) {
+						window.location = '/';
+					}
 
 					window.location = short.at(0).get('url');
+				},
+				error: function (error) {
+					console.log(error);
 				}
 			})
 		},

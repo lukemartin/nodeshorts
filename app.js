@@ -7,6 +7,7 @@
 		express = require('express'),
 		path = require('path'),
 		mongoose = require('mongoose'),
+		fs = require('fs'),
 		port = 3001;
 
 	var app = express();
@@ -42,37 +43,34 @@
 	var ShortModel = mongoose.model('Short', Short);
 
 	// Routes
+	app.get('/:path', function (req, res) {
+		fs.exists(__dirname + '/www/' + req.params.path, function (e) {
+			if(!e) {
+				res.sendfile(__dirname + '/www/index.html');
+			} else {
+				res.send('boooo')
+			}
+		});
+
+	});
+
+
 	app.get('/api', function (req, res) {
 		res.send('API is running');
 	});
 
-	app.get('/api/shorts/:slug?', function (req, res) {
-		console.log(req.params.slug);
 
+	app.get('/api/shorts/:slug?', function (req, res) {
 		return ShortModel.findOne({
 			slug: req.params.slug
 		}, function (error, short) {
-			if (!error) {
+			if (!error) {				
 				return res.send(short);
 			} else {
 				return console.log(error);
 			}
 		});
 	});
-
-	// app.get('/api/shorts/search/:url?', function (req, res) {
-	// 	console.log(req.params.url);
-
-	// 	return ShortModel.find({
-	// 		url: req.params.url
-	// 	}, function (error, shorts) {
-	// 		if (!error) {
-	// 			return res.send(shorts);
-	// 		} else {
-	// 			return console.log(error);
-	// 		}
-	// 	});
-	// });
 
 	app.post('/api/shorts', function (req, res) {
 		var short = new ShortModel({
@@ -98,7 +96,7 @@
 				return res.send(error);
 			}
 		});
-	});
+	});	
 
 	var hasher = function (URL, length) {
 		if (!length) {

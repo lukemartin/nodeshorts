@@ -7,6 +7,8 @@
     "express": "3.x",
     "mongoose": "3.1.1",
     "path": "0.4.9",
-    "nodemon": "0.6.23"
+    "nodemon": "0.6.23",
+    "hbs": "1.0.9",
+    "handlebars": "1.0.7"
   }
 }

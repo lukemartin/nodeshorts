@@ -8,6 +8,7 @@
 		path = require('path'),
 		mongoose = require('mongoose'),
 		fs = require('fs'),
+		hbs = require('hbs'),
 		port = 3001;
 
 	var app = express();
@@ -42,62 +43,19 @@
 
 	var ShortModel = mongoose.model('Short', Short);
 
-	// Routes
-	app.get('/:path', function (req, res) {
-		fs.exists(__dirname + '/www/' + req.params.path, function (e) {
-			if(!e) {
-				res.sendfile(__dirname + '/www/index.html');
-			} else {
-				res.send('boooo')
-			}
-		});
+	// Handlebars
+	// app.set('view options', { layout: false });
+	app.set('views', __dirname + '/views/');
+	app.set('view engine', 'html');
+	app.engine('html', require('hbs').__express);
 
+	// Routes	
+	app.get('/', function (req, res) {
+		res.render('blah.html', {name: 'Luke'});
 	});
+	
 
-
-	app.get('/api', function (req, res) {
-		res.send('API is running');
-	});
-
-
-	app.get('/api/shorts/:slug?', function (req, res) {
-		return ShortModel.findOne({
-			slug: req.params.slug
-		}, function (error, short) {
-			if (!error) {				
-				return res.send(short);
-			} else {
-				return console.log(error);
-			}
-		});
-	});
-
-	app.post('/api/shorts', function (req, res) {
-		var short = new ShortModel({
-			url: req.body.url,
-			slug: hasher(req.body.url)
-		});
-
-		return short.save(function (error) {
-			if (!error) {
-				return res.send('created record', short);
-			} else {
-				if (error.code === 11000) {
-					return ShortModel.findOne({
-						url: req.body.url
-					}, function (error, short) {
-						if (!error) {
-							return res.send(short);
-						} else {
-							return console.log(error);
-						}
-					});
-				}
-				return res.send(error);
-			}
-		});
-	});	
-
+	// Hasher
 	var hasher = function (URL, length) {
 		if (!length) {
 			length = 6;

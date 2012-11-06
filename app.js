@@ -62,7 +62,23 @@
 					if (!error) {
 						if (short) {
 							console.log('hit!');
-							res.redirect(short.url);
+							console.log(short);
+
+							short.visits++;
+							if (short.ips.indexOf(req.ip) === -1) {
+								short.ips.push(req.ip);
+								short.unique_visits++;
+							}
+
+							short.save(function (error) {
+								if (!error) {
+									res.redirect(short.url);
+									res.send('roger');
+								} else {
+									res.send(error);
+								}
+							});
+							console.log(short);
 						} else {
 							res.send(404);
 						}

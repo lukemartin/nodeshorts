@@ -34,6 +34,7 @@
 		visits:        { type: Number, default: 0 },
 		unique_visits: { type: Number, default: 0 },
 		ips:           { type: Array },
+		creator_ip:    { type: String },
 		created:       { type: Date, default: Date.now },
 		modified:      { type: Date, default: Date.now }
 	});
@@ -103,11 +104,16 @@
 
 		short.save(function (error) {
 			if (!error) {
-				render_shortened(res, req, short);
+				short.creator_ip = req.ip;
+				short.save(function (error) {
+					if (!error) {
+						render_shortened(res, req, short);
+					}
+				});
 			} else {
 				if (error.code === 11000) {
-					console.log('already in bro!');
-					
+					console.log('already in!');
+
 					ShortModel.findOne({
 						url: req.body.url
 					}, function (error, short) {
